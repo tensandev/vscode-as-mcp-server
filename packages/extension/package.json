@@ -44,10 +44,11 @@
           "type": "string",
           "enum": [
             "statusBar",
-            "quickPick"
+            "quickPick",
+            "none"
           ],
           "default": "quickPick",
-          "description": "The UI to use for confirming changes: status bar buttons or quick pick dialog."
+          "description": "The UI to use for confirming changes: status bar buttons or quick pick dialog. Set to 'none' to disable confirmation."
         },
         "mcpServer.confirmNonDestructiveCommands": {
           "type": "boolean",

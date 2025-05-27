@@ -33,6 +33,11 @@ export class ConfirmationUI {
 
     console.log(`[ConfirmationUI] Using ${confirmationUI} UI for confirmation`);
 
+    if (confirmationUI === 'none') {
+      // 確認ダイアログをスキップ
+      return "Approve";
+    }
+
     if (confirmationUI === 'quickPick') {
       return await this.showQuickPickConfirmation(message, detail, approveLabel, denyLabel);
     } else {
