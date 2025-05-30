@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { z } from 'zod';
 import { ExecuteCommandTool } from './execute_command';
-import { formatResponse } from '../utils/response';
 
 export const generateCommitMessageSchema = z.object({
   includeUnstaged: z.boolean().optional().default(false).describe('Include unstaged changes in the analysis'),
@@ -10,15 +9,28 @@ export const generateCommitMessageSchema = z.object({
   format: z.enum(['conventional', 'simple', 'detailed']).optional().default('conventional').describe('Commit message format style'),
 });
 
-type GenerateCommitMessageParams = z.infer<typeof generateCommitMessageSchema>;
+type GenerateCommitMessageParams = {
+  includeUnstaged?: boolean;
+  maxFiles?: number;
+  language?: 'ja' | 'en';
+  format?: 'conventional' | 'simple' | 'detailed';
+};
 
 interface CommitMessageResult {
   content: Array<{ type: 'text'; text: string }>;
   isError: boolean;
 }
 
-export async function generateCommitMessageTool(params: GenerateCommitMessageParams): Promise<CommitMessageResult> {
+export async function generateCommitMessageTool(params: GenerateCommitMessageParams = {}): Promise<CommitMessageResult> {
   try {
+    // Set defaults for optional parameters
+    const {
+      includeUnstaged = false,
+      maxFiles = 10,
+      language = 'en',
+      format = 'conventional'
+    } = params;
+
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
     if (!workspaceFolder) {
       return {
@@ -49,7 +61,7 @@ export async function generateCommitMessageTool(params: GenerateCommitMessagePar
 
     // Get staged changes
     const [___, diffResult] = await executeCommandTool.execute(
-      params.includeUnstaged 
+      includeUnstaged 
         ? 'git diff HEAD --stat' 
         : 'git diff --cached --stat',
       undefined,
@@ -57,7 +69,7 @@ export async function generateCommitMessageTool(params: GenerateCommitMessagePar
     );
 
     if (diffResult.text.trim() === '') {
-      if (params.includeUnstaged) {
+      if (includeUnstaged) {
         return {
           content: [{ type: 'text', text: 'No changes found in the repository.' }],
           isError: false,
@@ -72,7 +84,7 @@ export async function generateCommitMessageTool(params: GenerateCommitMessagePar
 
     // Get detailed diff for analysis
     const [____, detailedDiffResult] = await executeCommandTool.execute(
-      params.includeUnstaged 
+      includeUnstaged 
         ? 'git diff HEAD --name-status' 
         : 'git diff --cached --name-status',
       undefined,
@@ -80,10 +92,10 @@ export async function generateCommitMessageTool(params: GenerateCommitMessagePar
     );
 
     // Analyze changes
-    const changeAnalysis = analyzeChanges(detailedDiffResult.text, statusResult.text);
+    const changeAnalysis = analyzeChanges(detailedDiffResult.text, maxFiles);
     
     // Generate commit message based on analysis
-    const commitMessage = generateCommitMessage(changeAnalysis, params);
+    const commitMessage = generateCommitMessage(changeAnalysis, { language, format });
 
     const result = `
 **Analyzed Changes:**
@@ -129,8 +141,10 @@ interface ChangeAnalysis {
   hasSourceChanges: boolean;
 }
 
-function analyzeChanges(diffOutput: string, statusOutput: string): ChangeAnalysis {
+function analyzeChanges(diffOutput: string, maxFiles: number = 10): ChangeAnalysis {
   const lines = diffOutput.trim().split('\n');
+  // Limit the number of files to analyze
+  const limitedLines = lines.slice(0, maxFiles);
   const analysis: ChangeAnalysis = {
     modified: [],
     added: [],
@@ -146,7 +160,7 @@ function analyzeChanges(diffOutput: string, statusOutput: string): ChangeAnalysi
 
   const fileTypeSet = new Set<string>();
 
-  for (const line of lines) {
+  for (const line of limitedLines) {
     const [status, ...pathParts] = line.split('\t');
     const filePath = pathParts.join('\t');
     
@@ -204,8 +218,8 @@ function analyzeChanges(diffOutput: string, statusOutput: string): ChangeAnalysi
   return analysis;
 }
 
-function generateCommitMessage(analysis: ChangeAnalysis, params: GenerateCommitMessageParams): string {
-  const { language, format } = params;
+function generateCommitMessage(analysis: ChangeAnalysis, params: { language?: 'ja' | 'en'; format?: 'conventional' | 'simple' | 'detailed' }): string {
+  const { language = 'en', format = 'conventional' } = params;
 
   let type = 'feat';
   let scope = '';

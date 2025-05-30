@@ -74,7 +74,7 @@ suite('Generate Commit Message Tool Test Suite', function () {
 
   test('Generate commit message with no changes', async function () {
     console.log('Running no changes test');
-    const result = await generateCommitMessageTool({});
+    const result = await generateCommitMessageTool();
     console.log('No changes test result:', result);
 
     assert.strictEqual(result.isError, false, 'Should not be an error');
@@ -95,7 +95,7 @@ suite('Generate Commit Message Tool Test Suite', function () {
     try {
       await execAsync('git add new-feature.ts', { cwd: tmpDir });
 
-      const result = await generateCommitMessageTool({});
+      const result = await generateCommitMessageTool();
       console.log('Staged changes test result:', result);
 
       assert.strictEqual(result.isError, false, 'Should not be an error');
@@ -202,7 +202,7 @@ suite('Generate Commit Message Tool Test Suite', function () {
     });
 
     try {
-      const result = await generateCommitMessageTool({});
+      const result = await generateCommitMessageTool();
       console.log('Non-git directory test result:', result);
 
       assert.strictEqual(result.isError, true, 'Should be an error');
