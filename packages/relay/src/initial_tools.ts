@@ -333,7 +333,46 @@ export const initialTools = [
       },
       "required": [
         "terminalId"
-      ],
+      ],      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+    }
+  },
+  {
+    "name": "generate_commit_message",
+    "description": "Generate commit messages based on Git changes in the current repository.\nThis tool analyzes staged changes (or all changes if includeUnstaged is true) and suggests\nappropriate commit messages following conventional commit format or other specified formats.\n\nFeatures:\n- Analyzes file changes and types to suggest appropriate commit types\n- Supports multiple commit message formats (conventional, simple, detailed)\n- Multi-language support (English and Japanese)\n- Categorizes changes by type (feat, fix, docs, test, chore, etc.)\n- Provides change summary and statistics",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "includeUnstaged": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include unstaged changes in the analysis"
+        },
+        "maxFiles": {
+          "type": "number",
+          "default": 10,
+          "description": "Maximum number of files to analyze (default: 10)"
+        },
+        "language": {
+          "type": "string",
+          "enum": [
+            "ja",
+            "en"
+          ],
+          "default": "en",
+          "description": "Language for the commit message (ja: Japanese, en: English)"
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "conventional",
+            "simple",
+            "detailed"
+          ],
+          "default": "conventional",
+          "description": "Commit message format style"
+        }
+      },
       "additionalProperties": false,
       "$schema": "http://json-schema.org/draft-07/schema#"
     }

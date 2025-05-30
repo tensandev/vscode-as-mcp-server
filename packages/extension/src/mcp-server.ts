@@ -20,6 +20,7 @@ import {
 import { executeCommandSchema, executeCommandToolHandler } from './tools/execute_command';
 import { executeVSCodeCommandSchema, executeVSCodeCommandToolHandler } from './tools/execute_vscode_command';
 import { focusEditorTool } from './tools/focus_editor';
+import { generateCommitMessageSchema, generateCommitMessageToolHandler } from './tools/generate_commit_message';
 import { getTerminalOutputSchema, getTerminalOutputToolHandler } from './tools/get_terminal_output';
 import { listDirectorySchema, listDirectoryTool } from './tools/list_directory';
 import { listVSCodeCommandsSchema, listVSCodeCommandsToolHandler } from './tools/list_vscode_commands';
@@ -441,6 +442,33 @@ function registerTools(mcpServer: ToolRegistry) {
     executeVSCodeCommandSchema.shape,
     async (params: z.infer<typeof executeVSCodeCommandSchema>) => {
       const result = await executeVSCodeCommandToolHandler(params);
+      return {
+        content: result.content.map((item) => ({
+          ...item,
+          type: 'text' as const,
+        })),
+        isError: result.isError,
+      };
+    }  );
+
+  // Register generate commit message tool
+  mcpServer.tool(
+    'generate_commit_message',
+    dedent`
+      Generate commit messages based on Git changes in the current repository.
+      This tool analyzes staged changes (or all changes if includeUnstaged is true) and suggests
+      appropriate commit messages following conventional commit format or other specified formats.
+      
+      Features:
+      - Analyzes file changes and types to suggest appropriate commit types
+      - Supports multiple commit message formats (conventional, simple, detailed)
+      - Multi-language support (English and Japanese)
+      - Categorizes changes by type (feat, fix, docs, test, chore, etc.)
+      - Provides change summary and statistics
+    `.trim(),
+    generateCommitMessageSchema.shape,
+    async (params: z.infer<typeof generateCommitMessageSchema>) => {
+      const result = await generateCommitMessageToolHandler(params);
       return {
         content: result.content.map((item) => ({
           ...item,

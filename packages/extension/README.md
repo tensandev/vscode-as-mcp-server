@@ -1,6 +1,7 @@
 # VSCode as MCP Server
 
-A VSCode extension that turns your VSCode into an MCP server, enabling advanced coding assistance from MCP clients like Claude Desktop.
+A VSCode exte- **preview_url**: Open URLs within VSCode's integrated browser
+- **generate_commit_message**: Generate conventional commit messages based on Git changession that turns your VSCode into an MCP server, enabling advanced coding assistance from MCP clients like Claude Desktop.
 
 ## Key Features
 
