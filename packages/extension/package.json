@@ -1,11 +1,10 @@
 {
-  "name": "vscode-as-mcp-server",
-  "displayName": "VSCode as MCP Server",
+  "name": "vscode-as-mcp-modify",
+  "displayName": "VSCode as MCP Modify",
   "description": "Expose VSCode features such as file viewing and editing as MCP, enabling the LLM to access these functionalities.",
-  "publisher": "acomagu",
+  "publisher": "toriten",
   "version": "0.0.25",
   "type": "commonjs",
-  "icon": "icon.png",
   "engines": {
     "vscode": "^1.98.0"
   },

@@ -1,7 +1,7 @@
 # VSCode as MCP Server
 
 [Marketplace](h- **preview_url**: Open URLs within VSCode's integrated browser
-- **generate_commit_message**: Generate conventional commit messages based on Git changestps://marketplace.visualstudio.com/items?itemName=acomagu.vscode-as-mcp-server)
+- **generate_commit_message**: Generate conventional commit messages based on Git changestps://marketplace.visualstudio.com/items?itemName=acomagu.vscode-as-mcp-modify)
 
 A VSCode extension that turns your VSCode into an MCP server, enabling advanced coding assistance from MCP clients like Claude Desktop.
 
@@ -44,11 +44,11 @@ A VSCode extension that turns your VSCode into an MCP server, enabling advanced 
 
 ## Installation & Setup
 
-1. Install the extension from the [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=acomagu.vscode-as-mcp-server).
+1. Install the extension from the [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=acomagu.vscode-as-mcp-modify).
 
 2. Configure your MCP client:
 
-    - **Using mcp-installer**: You can simply instruct it to "install the vscode-as-mcp-server MCP server".
+    - **Using mcp-installer**: You can simply instruct it to "install the vscode-as-mcp-modify MCP server".
     - **Other clients like Claude Desktop**: Add the following to your configuration file (`claude_desktop_config.json`):
 
     ```json
@@ -56,7 +56,7 @@ A VSCode extension that turns your VSCode into an MCP server, enabling advanced 
       "mcpServers": {
         "vscode": {
           "command": "npx",
-          "args": ["vscode-as-mcp-server"]
+          "args": ["vscode-as-mcp-modify"]
         }
       }
     }
